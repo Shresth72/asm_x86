@@ -44,15 +44,15 @@ print:
     add rsp, 40
     ret
 
-macro for addr, again, over { ;; counter addr, labels..
-    mov QWORD [addr], 0
+macro for i, again, over { ;; counter addr, labels..
+    mov QWORD [i], 0
 again 
-    cmp QWORD [addr], 10
+    cmp QWORD [i], 10
     jge over
 }
 
-macro endfor addr, again, over {
-    inc QWORD [addr]
+macro endfor i, again, over {
+    inc QWORD [i]
     jmp again
 over:
 }
@@ -60,24 +60,21 @@ over:
 entry _start
 _start:
 
-    ;; mov r15, 0
-    mov QWORD [i], 0
+    mov rsi, hello
+    mov rdx, hello_len
+    call print_str
 
-.again:
-    cmp QWORD [i], 10
-    jge .over
-        mov rsi, hello
-        mov rdx, hello_len
-        call print_str
+    lea rsi, [another] ;; Load Affective Address
+    mov rdx, another_len
+    call print_str
 
-        lea rsi, [another] ;; Load Affective Address
-        mov rdx, another_len
-        call print_str
-
-        mov rdi, QWORD [i]
-        call print
-    inc QWORD [i]
-    jmp .again
+    for i, 1, 10
+        for j, 1, 10
+            mov rdi, QWORD [i]
+            add rdi, QWORD [j]
+            call print
+        endfor j
+    endfor i
 
 .over:
     mov rax, 60
